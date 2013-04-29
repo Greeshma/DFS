@@ -13,6 +13,8 @@
 #include "common.h"
 #include "mem_server.h"
 
+void process_command(char *, int);
+
 void *handle_client(void *arg) 
 {
   char sendBuff[MAX_STR];

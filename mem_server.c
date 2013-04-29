@@ -22,12 +22,11 @@ int init_mem_serv() {
   servers = config_lookup(&cfg, "servers");
   int count = config_setting_length(servers);
   int i;
-  const char *addr;
+  const char *ip_addr;
 
   for(i=0;i<count;i++){
-    ip = config_setting_get_elem(servers,i);
-    config_setting_lookup_string(ip, "ip", &addr);
+    ip_addr = config_setting_get_string_elem(servers, i);
 
-    mem_serv_list_append(mem_serv_list, addr);
+    mem_serv_list_append(mem_serv_list, ip_addr);
   }
 }
