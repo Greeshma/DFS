@@ -15,19 +15,23 @@ char *server;
 int port = 5000;
 
 char *mount_path;
+int is_synced;
 
-int send_command(int cmd)
-{
+int send_command(int cmd) {
+    printf("\n send_command %d", cmd);
     int sockfd = 0, n = 0;
     char recvBuff[1024];
     char sendBuff[1024];
     struct sockaddr_in serv_addr; 
+    printf("\n send_command %d", cmd);
 
     if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
         printf("\n Error : Could not create socket \n");
         return 1;
     } 
+            
+    printf("\n send_command %d", cmd);
 
     memset(&serv_addr, '0', sizeof(serv_addr)); 
 
@@ -57,24 +61,40 @@ int send_command(int cmd)
 }
 
 int parse_response(int cmd, char *resp) {
-  char ip[MAX_STR], *buf;
+  char ip[MAX_STR], *buf, ch;
   switch(cmd) {
     case INITIALISE_CLIENT:
+      is_synced = 0;
       strcpy(ip, resp);
       printf("\nEnter the path to mount the server partition: ");
       mount_path = (char *)malloc(sizeof(char) * MAX_PATH);
       buf = (char *)malloc(sizeof(char) * MAX_PATH);
       scanf("%s", mount_path);
-      sprintf(buf, "bin/dclient -S %s %s", ip, mount_path);
-      printf("\nCommande executing %s", buf);
+      printf("\nMounting the file system from %s on %s", ip, mount_path);
+      sprintf(buf, "corefs/bin/dclient -S %s %s", ip, mount_path);
       system(buf);
       break;
     case SYNC_MEM_SERVERS:
       printf("\n %s \n", resp);
+      is_synced = 1;
       break;
     case CLOSE_CLIENT:
-      printf("\n %s \n", resp);
-      printf("\npath: %s", mount_path);
+      if(! is_synced) {
+        printf("\nThe data has been changed locally. Are you sure you don't want to sync the server? (Y/N) ");
+        scanf(" %c", &ch);
+        printf("\nReceived char %c \n", ch);
+        switch(tolower(ch)) {
+          case 'y':
+            break;
+          case 'n':
+            printf("\nReceived no");
+            send_command(SYNC_MEM_SERVERS);
+            break;
+          default:
+            fprintf(stderr, "\nInvalid input");
+        }
+      }
+      printf("\nUnmounting the file system from %s", mount_path);
       sprintf(buf, "fusermount -u %s", mount_path);
       system(buf);
       break;
