@@ -8,7 +8,7 @@
 #define MAX_LIST_LENGTH 100
 
 int init_mem_serv_list(mem_serv *mem_serv_head) {
-  mem_serv_head = malloc(sizeof(mem_serv));
+  mem_serv_head = (mem_serv*) malloc(sizeof(mem_serv));
   if(mem_serv_head == NULL) {
     fprintf(stderr, "\nCould not initialise memory servers list");
     return -1;
@@ -51,14 +51,17 @@ int create_mem_serv_node(mem_serv *node, const char *ip) {
 }
 
 int mem_serv_list_append(mem_serv *head, const char *ip) {
+  fprintf(stdout, "\nIn mem_serv_list_append with ip %s", ip);
   mem_serv *curr = head;
   mem_serv *prev;
   while(curr != NULL) {
+    printf("\nin while with ip %s", curr->ip);
     prev = curr;
     curr = curr->next;
   }
 
   mem_serv *temp;
+  printf("\nlist.c line61");
   create_mem_serv_node(temp, ip);
   temp->prev = prev;
   return 1;

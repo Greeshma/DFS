@@ -15,6 +15,11 @@
 
 void process_command(char *, int);
 
+void get_mem_serv_ip(char *ip) {
+  // todo: use load balancer algo to get correct ip
+  return;
+}
+
 void *handle_client(void *arg) 
 {
   char sendBuff[MAX_STR];
@@ -36,7 +41,9 @@ void *handle_client(void *arg)
 }
 
 void init_client(char *resp) {
-  strcpy(resp, "Init client\n");
+  char ip[INET_ADDRSTRLEN + 1];
+  get_mem_serv_ip(ip);
+  strcpy(resp, ip);
   return;
 }
 

@@ -14,6 +14,8 @@
 char *server;
 int port = 5000;
 
+char *mount_path;
+
 int send_command(int cmd)
 {
     int sockfd = 0, n = 0;
@@ -54,6 +56,32 @@ int send_command(int cmd)
     return 0;
 }
 
+int parse_response(int cmd, char *resp) {
+  char ip[MAX_STR], *buf;
+  switch(cmd) {
+    case INITIALISE_CLIENT:
+      strcpy(ip, resp);
+      printf("\nEnter the path to mount the server partition: ");
+      mount_path = (char *)malloc(sizeof(char) * MAX_PATH);
+      buf = (char *)malloc(sizeof(char) * MAX_PATH);
+      scanf("%s", mount_path);
+      sprintf(buf, "bin/dclient -S %s %s", ip, mount_path);
+      printf("\nCommande executing %s", buf);
+      system(buf);
+      break;
+    case SYNC_MEM_SERVERS:
+      printf("\n %s \n", resp);
+      break;
+    case CLOSE_CLIENT:
+      printf("\n %s \n", resp);
+      printf("\npath: %s", mount_path);
+      sprintf(buf, "fusermount -u %s", mount_path);
+      system(buf);
+      break;
+  }
+}
+
+/*
 int main(int argc, char **argv) {
   if(argc != 2)
   {
@@ -72,3 +100,4 @@ int main(int argc, char **argv) {
 
   return 0;
 }
+*/
