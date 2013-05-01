@@ -7,35 +7,83 @@
 #define MAX_PATH 257
 #define MAX_LIST_LENGTH 100
 
-int init_mem_serv_list(mem_serv *mem_serv) {
+int init_mem_serv_list(mem_serv *mem_serv_head) {
+  mem_serv_head = malloc(sizeof(mem_serv));
+  if(mem_serv_head == NULL) {
+    fprintf(stderr, "\nCould not initialise memory servers list");
+    return -1;
+  }
+
+  mem_serv_head->ip = NULL;
+  mem_serv_head->is_assigned  = -1;
+  mem_serv_head->is_synced = -1;
+
+  mem_serv_head->next = NULL;
+  mem_serv_head->prev = NULL;
   return 1;
 }
 
-void free_mem_serv_list(mem_serv *mem_serv) {
+void free_mem_serv_list(mem_serv *mem_serv_head) {
+  mem_serv *temp;
+  while(mem_serv_head != NULL) {
+    temp = mem_serv_head;
+    mem_serv_head = mem_serv_head->next;
+    free(temp);
+  }
   return;
 }
 
-int mem_serv_list_append(mem_serv *head, const char *ip)
-{
+int create_mem_serv_node(mem_serv *node, const char *ip) {
+  node = malloc(sizeof(mem_serv));
+  if(node == NULL) {
+    fprintf(stderr, "\nError in creating a memory server node");
+    return -1;
+  }
+
+  node->ip = ip;
+  node->is_assigned = 0;
+  node->is_synced = 0;
+
+  node->prev = NULL;
+  node->next = NULL;
+
   return 1;
 }
 
-/*
-int init_list_head(list_head * head)
-{
-  if(head == NULL){
-    fprintf(stderr, "init_list_head: received NULL head value - initialize head\n");
-    return -1;
+int mem_serv_list_append(mem_serv *head, const char *ip) {
+  mem_serv *curr = head;
+  mem_serv *prev;
+  while(curr != NULL) {
+    prev = curr;
+    curr = curr->next;
   }
-  head->next = NULL;
-  head->prev = NULL;
-  head->alength = 0;
-  head->data = NULL;
-  head->server_addr = NULL;
-  return 0;
+
+  mem_serv *temp;
+  create_mem_serv_node(temp, ip);
+  temp->prev = prev;
+  return 1;
 }
                    
+int remove_mem_serv_node(mem_serv *head, const char *ip) {
+  mem_serv *curr = head;
+  mem_serv *next = curr->next;
+  mem_serv *prev;
+  while (curr != NULL) {
+    if(strcasecmp(ip, curr->ip) == 0) {
+      prev->next = next;
+      next->prev = prev;
+      free(curr);
+      return 1;
+    }
+  }
+  fprintf(stderr, "\nError: Memory server with ip %s not found", ip);
+  return -1;
+}
 
+int mem_serv_list_remove(mem_serv *head, const char *ip) {
+}
+
+/*
 int insert_info_ptr(list_head * head,  list_tail ** tail, const char* addr,
                     unsigned int addr_length, void * data)
 {

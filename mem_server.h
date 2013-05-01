@@ -6,9 +6,13 @@
 #include <arpa/inet.h>
 
 typedef struct _mem_serv {
-  struct sockaddr_in serv_addr; 
-  int is_assgned;
+//  struct sockaddr_in serv_addr; 
+  char *ip;
+  int is_assigned;
   int is_synced;
+
+  struct _mem_serv *next;
+  struct _mem_serv *prev;
 } mem_serv;
 
 int init_mem_serv();
