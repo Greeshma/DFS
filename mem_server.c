@@ -5,15 +5,14 @@
 #include "mem_server.h"
 #include "list.h"
 
-mem_serv* mem_serv_list;
+mem_serv mem_serv_list;
 
 int init_mem_serv() {
   config_t cfg;
   config_setting_t *servers, *ip;
 
   config_init(&cfg);
-  mem_serv_list = init_mem_serv_list();
-  if(mem_serv_list == NULL){
+  if( init_mem_serv_list(&mem_serv_list) < 0){
     fprintf(stderr, "\nError: Initialising memory servers list");
     return -1;
   }
@@ -31,6 +30,6 @@ int init_mem_serv() {
   for(i=0; i<count; i++){
     ip_addr = config_setting_get_string_elem(servers, i);
     printf("\nAdding memory server with ip %s", ip_addr);
-    mem_serv_list_append(mem_serv_list, ip_addr);
+    mem_serv_list_append(&mem_serv_list, ip_addr);
   }
 }

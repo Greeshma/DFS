@@ -7,7 +7,7 @@
 
 typedef struct _mem_serv {
 //  struct sockaddr_in serv_addr; 
-  char *ip;
+  char ip[16];
   int is_assigned;
   int is_synced;
 

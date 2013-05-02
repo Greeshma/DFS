@@ -7,22 +7,27 @@
 #define MAX_PATH 257
 #define MAX_LIST_LENGTH 100
 
-mem_serv* init_mem_serv_list(void) {
-  mem_serv* mem_serv_head = (mem_serv*) malloc(sizeof(mem_serv));
+/* 
+ * create mem server list head
+ */
+int init_mem_serv_list(mem_serv* mem_serv_head) {
+  mem_serv_head = (mem_serv*) malloc(sizeof(mem_serv));
   if(mem_serv_head == NULL) {
     fprintf(stderr, "\nCould not initialise memory servers list");
-    return NULL;
+    return -1;
   }
 
-  mem_serv_head->ip = NULL;
+  //mem_serv_head->ip = NULL;
+  strcpy(mem_serv_head->ip, "");
   mem_serv_head->is_assigned  = -1;
   mem_serv_head->is_synced = -1;
 
   mem_serv_head->next = NULL;
   mem_serv_head->prev = NULL;
-  return mem_serv_head;
+  return 0;
 }
 
+/* free mem server list */
 void free_mem_serv_list(mem_serv *mem_serv_head) {
   mem_serv *temp;
   while(mem_serv_head != NULL) {
@@ -40,7 +45,7 @@ int create_mem_serv_node(mem_serv *node, const char *ip) {
     return -1;
   }
 
-  node->ip = ip;
+  strcpy(node->ip, ip);
   node->is_assigned = 0;
   node->is_synced = 0;
 
@@ -50,22 +55,42 @@ int create_mem_serv_node(mem_serv *node, const char *ip) {
   return 1;
 }
 
+/*
+ * kln:
+ * Assumed the list entries start with the head and the head is not used to keep
+ * count of number of elements in the list. It is always traversed till the end
+ * of the list.
+ *
+ * Directly creating a node inside the append instead of using another func call
+ * to create_mem_serv_node...just to get rid of the pointer hassel.
+ */
+
 int mem_serv_list_append(mem_serv *head, const char *ip) {
   fprintf(stdout, "\nIn mem_serv_list_append with ip %s", ip);
   mem_serv *curr = head;
   mem_serv *prev;
-  while(curr != NULL) {
-    printf("\nin while with ip %s", curr->ip);
-    prev = curr;
-    curr = curr->next;
+  mem_serv *new;
+
+    if(curr != NULL){//if head/list exists
+        /* move to end of list */
+        while(curr->next != NULL) {
+            curr = curr->next;
+        }
+    }else{
+        fprintf(stdout, "\nseems like the mem serv list is missing!! i cannot proceed further.\n");
+        return -1;
+    }
+    new = (mem_serv *)malloc(sizeof(mem_serv));
+    //new->ip = ip; // add new ip
+    strcpy(new->ip, ip);
+    new->is_assigned = 0; // default is not assigned 
+    new->is_synced = 0; // default is not synced
+    new->next = NULL; // this is the last in the list
+    new->prev = curr; // append to current list
+  
+    return 1;
   }
 
-  mem_serv *temp;
-  printf("\nlist.c line61");
-  create_mem_serv_node(temp, ip);
-  temp->prev = prev;
-  return 1;
-}
                    
 int remove_mem_serv_node(mem_serv *head, const char *ip) {
   mem_serv *curr = head;
