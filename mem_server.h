@@ -6,15 +6,27 @@
 #include <arpa/inet.h>
 
 typedef struct _mem_serv {
-//  struct sockaddr_in serv_addr; 
   char ip[INET_ADDRSTRLEN];
   int is_assigned;
   int is_synced;
+
+  int count;
 
   struct _mem_serv *next;
   struct _mem_serv *prev;
 } mem_serv;
 
 int init_mem_serv();
+
+int get_client_count(mem_serv*);
+void set_client_count(mem_serv*, int);
+void inc_client_count(mem_serv*);
+void dec_client_count(mem_serv*);
+
+void set_is_assigned(mem_serv*, int);
+void set_is_synced(mem_serv*, int);
+
+int get_is_assigned(mem_serv*);
+int get_is_synced(mem_serv*);
 
 #endif

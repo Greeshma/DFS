@@ -112,26 +112,26 @@ int parse_response(int cmd, char *resp) {
 int main(int argc, char **argv) {
     char ch;
 
-  if(argc != 2)
-  {
-      printf("\n Usage: %s <ip of server> \n",argv[0]);
-      return 1;
-  } 
-  if(argc == 3)
-  {
-    port = atoi(argv[2]);
-  }
-  server = argv[1];
+    if(argc != 2)
+    {
+        printf("\n Usage: %s <ip of server> \n",argv[0]);
+        return 1;
+    } 
+    server = argv[1];
+    if(argc == 3)
+    {
+        port = atoi(argv[2]);
+    }
 
-  send_command(INITIALISE_CLIENT);
-  printf("\nClient init done. Enter any key to continue: ");
-  scanf(" %c", &ch);
-  send_command(SYNC_MEM_SERVERS);
-  printf("\nSync memeory servers done. Enter any key to continue: ");
-  scanf(" %c", &ch);
-  send_command(CLOSE_CLIENT);
-  printf("\nClient close done. Enter any key to continue: ");
-  scanf(" %c", &ch);
+    send_command(INITIALISE_CLIENT);
+    printf("\nClient init done. Enter any key to continue: ");
+    scanf(" %c", &ch);
+    send_command(SYNC_MEM_SERVERS);
+    printf("\nSync memeory servers done. Enter any key to continue: ");
+    scanf(" %c", &ch);
+    send_command(CLOSE_CLIENT);
+    printf("\nClient close done. Enter any key to continue: ");
+    scanf(" %c", &ch);
 
-  return 0;
+    return 0;
 }
