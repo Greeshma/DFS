@@ -114,6 +114,6 @@ int get_best_mem_serv_ip(char *ip) {
         
         curr = curr->next;
     }
-    ip = min->ip;
+    strcpy(ip, min->ip);
     printf("\nSending ip %s ", ip);
 }
