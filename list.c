@@ -59,7 +59,6 @@ int create_mem_serv_node(mem_serv *node, const char *ip) {
 }
 
 /*
- * kln:
  * Assumed the list entries start with the head and the head is not used to keep
  * count of number of elements in the list. It is always traversed till the end
  * of the list.
@@ -84,7 +83,6 @@ int mem_serv_list_append(mem_serv *head, const char *ip) {
         return -1;
     }
     new = (mem_serv *)malloc(sizeof(mem_serv));
-    //new->ip = ip; // add new ip
     strcpy(new->ip, ip);
     set_is_assigned(new, 0);
     set_is_synced(new, 0);
@@ -92,8 +90,9 @@ int mem_serv_list_append(mem_serv *head, const char *ip) {
 
     new->next = NULL; // this is the last in the list
     new->prev = curr; // append to current list
-    curr->next = new; 
-
+  
+    curr->next = new;
+  
     return 1;
 }
 

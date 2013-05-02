@@ -4,7 +4,7 @@ LDFLAGS=-lconfig -lpthread
 all: server client
 
 clean:
-	rm -f *.o
+	rm -f *.o server client
 
 server: server.o mem_server.o list.o
 	$(CC) $^ -o $@ $(LDFLAGS)

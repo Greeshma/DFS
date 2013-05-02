@@ -15,6 +15,8 @@
   
 int port = 5000;
 
+int sync_in_process = 0;
+
 void process_command(char *, char *);
 
 void get_mem_serv_ip(char *ip) {
@@ -51,15 +53,16 @@ void init_client(char *resp) {
     char ip[INET_ADDRSTRLEN + 1];
     fprintf(stderr, "obtaining mem server ip...\n");
     get_mem_serv_ip(ip);
-    fprintf(stderr, "obtainged mem server : %s\n", ip);
-    //printf("\nClient count of memory server %s is %d", ip, get_client_count(get_mem_serv_by_ip(ip)));
+
+    fprintf(stderr, "Obtained mem server : %s\n", ip);
+
     mem_serv curr_mem_serv;
     fprintf(stderr, "requesting for mem-server with ip: %s\n", ip);
     get_mem_serv_by_ip(&curr_mem_serv, ip);
+    
     fprintf(stderr, "received a mem_server count :%d\n", curr_mem_serv.count);
 
     inc_client_count(&curr_mem_serv);
-    //printf("\nClient count of memory server %s is %d", ip, get_client_count(get_mem_serv_by_ip(ip)));
     printf("\nClient count of memory server %s is %d", ip, get_client_count(&curr_mem_serv));
 
     strcpy(resp, ip);
@@ -68,12 +71,11 @@ void init_client(char *resp) {
 
 void sync_mem_serv(char *resp) {
     printf("\nTrying to sync memory servers");
-    strcpy(resp, "sync\n");
+    strcpy(resp, "Sync completed\n");
     return;
 }
 
 void close_client(char *resp, char *ip) {
-    //printf("\nCLosing client. Ip address of the attached server: %s and number of clients attached is %d ", ip, get_client_count(get_mem_serv_by_ip(ip)));
     mem_serv curr_mem_serv;
     get_mem_serv_by_ip(&curr_mem_serv, ip);
     dec_client_count(&curr_mem_serv);
@@ -84,9 +86,10 @@ void close_client(char *resp, char *ip) {
 }
 
 void process_command(char *resp, char *req) {
-    char c = req[0];
-    int cmd = atoi(&c);
+    char ch = req[0];
+    int cmd = atoi(&ch);
     char *ip = req+1;
+    printf("\nProcess command function: cmd: %d, ip: %s", cmd, ip);
     switch (cmd) {
         case INITIALISE_CLIENT:
             init_client(resp);

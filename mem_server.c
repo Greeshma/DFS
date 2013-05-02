@@ -71,6 +71,7 @@ int get_is_synced(mem_serv* curr) {
 }
 
 void get_mem_serv_by_ip(mem_serv *node, const char *ip) {
+    printf("\nGet memory server by ip %s\n", ip);
     mem_serv *curr, *prev;
     curr = &mem_serv_list;
     node = NULL;
@@ -78,14 +79,13 @@ void get_mem_serv_by_ip(mem_serv *node, const char *ip) {
     fprintf(stderr, "searching for mem servers with ip %s\n", ip);
     
     while (curr != NULL) {
-
-        fprintf(stderr, "comapring %s with %s \n", ip, curr->ip);
+        fprintf(stderr, "comparing %s with %s \n", ip, curr->ip);
         if(strcasecmp(ip, curr->ip) == 0) {
+            printf("\nFound memory server by ip %s\n", ip);
             node = curr;
-            fprintf(stderr, "found mem server with ip %s\n", curr->ip);
             break;
         }
-        
+
         prev = curr;
         curr = curr->next;
     }

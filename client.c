@@ -130,8 +130,7 @@ int main(int argc, char **argv) {
     printf("\nSync memeory servers done. Enter any key to continue: ");
     scanf(" %c", &ch);
     send_command(CLOSE_CLIENT);
-    printf("\nClient close done. Enter any key to continue: ");
-    scanf(" %c", &ch);
+    printf("\nClient close done.");
 
     return 0;
 }
