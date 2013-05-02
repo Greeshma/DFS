@@ -56,14 +56,14 @@ void init_client(char *resp) {
 
     fprintf(stderr, "Obtained mem server : %s\n", ip);
 
-    mem_serv curr_mem_serv;
+    mem_serv *curr_mem_serv;
     fprintf(stderr, "requesting for mem-server with ip: %s\n", ip);
-    get_mem_serv_by_ip(&curr_mem_serv, ip);
+    curr_mem_serv = get_mem_serv_by_ip(ip);
     
-    fprintf(stderr, "received a mem_server count :%d\n", curr_mem_serv.count);
+    fprintf(stderr, "received a mem_server count :%d\n", curr_mem_serv->count);
 
-    inc_client_count(&curr_mem_serv);
-    printf("\nClient count of memory server %s is %d", ip, get_client_count(&curr_mem_serv));
+    inc_client_count(curr_mem_serv);
+    printf("\nClient count of memory server %s is %d", ip, get_client_count(curr_mem_serv));
 
     strcpy(resp, ip);
     return;
@@ -76,10 +76,10 @@ void sync_mem_serv(char *resp) {
 }
 
 void close_client(char *resp, char *ip) {
-    mem_serv curr_mem_serv;
-    get_mem_serv_by_ip(&curr_mem_serv, ip);
-    dec_client_count(&curr_mem_serv);
-    printf("\nCLosing client. Ip address of the attached server: %s and number of clients attached is %d ", ip, get_client_count(&curr_mem_serv));
+    mem_serv *curr_mem_serv;
+    curr_mem_serv = get_mem_serv_by_ip(ip);
+    dec_client_count(curr_mem_serv);
+    printf("\nCLosing client. Ip address of the attached server: %s and number of clients attached is %d ", ip, get_client_count(curr_mem_serv));
 
     strcpy(resp, "Bye bye!! ^_^\n");
     return;
