@@ -56,7 +56,7 @@ int send_command(int cmd) {
     }
 
     memset(sendBuff, 0, MAX_SIZE);
-    sprintf(sendBuff, "%d%s", cmd, server);
+    sprintf(sendBuff, "%d%s", cmd, mem_server_ip);
     printf("\nSending command: %s", sendBuff);
     n = write(sockfd, sendBuff, strlen(sendBuff)); 
 
