@@ -20,6 +20,7 @@ void process_command(char *, int);
 void get_mem_serv_ip(char *ip) {
   // todo: use load balancer algo to get correct ip
   strcpy(ip, "localhost");
+  printf("\nReturning the ip address of memory server %s", ip);
   return;
 }
 
@@ -34,47 +35,64 @@ void *handle_client(void *arg)
 
   bzero(recvBuff, MAX_SIZE);
   n = read(connfd, recvBuff, sizeof(recvBuff)-1);
-  printf("\nserver received: %s\n", recvBuff, n);
+  printf("\nReceived request: %s\n", recvBuff, n);
 
   memset(sendBuff, 0, sizeof(sendBuff)); 
-  process_command(sendBuff, atoi(recvBuff));
+  process_command(sendBuff, recvBuff);
   n = write(connfd, sendBuff, strlen(sendBuff)); 
+  printf("\nWriting response: %s", sendBuff);
 
   close(connfd);
 }
 
 void init_client(char *resp) {
-  char ip[INET_ADDRSTRLEN + 1];
-  get_mem_serv_ip(ip);
-  strcpy(resp, ip);
-  return;
+    printf("\nInitialising client");
+
+    char ip[INET_ADDRSTRLEN + 1];
+    get_mem_serv_ip(ip);
+
+    printf("\nClient count of memory server %s is %d", ip, get_client_count(get_mem_serv_by_ip(ip)));
+    mem_serv curr_mem_serv;
+    get_mem_serv_by_ip(&curr_mem_serv, ip);
+    inc_client_count(&curr_mem_serv);
+    printf("\nClient count of memory server %s is %d", ip, get_client_count(get_mem_serv_by_ip(ip)));
+
+    strcpy(resp, ip);
+    return;
 }
 
 void sync_mem_serv(char *resp) {
-  strcpy(resp, "sync\n");
-  return;
+    printf("\nTrying to sync memory servers");
+    strcpy(resp, "sync\n");
+    return;
 }
 
-void close_client(char *resp) {
-  //todo: clean up
-  strcpy(resp, "Bye bye!! ^_^\n");
-  return;
+void close_client(char *resp, char *ip) {
+    printf("\nCLosing client. Ip address of the attached server: %s and number of clients attached is %d ", ip, get_client_count(get_mem_serv_by_ip(ip)));
+    mem_serv curr_mem_serv;
+    get_mem_serv_by_ip(&curr_mem_serv, ip);
+    dec_client_count(&curr_mem_serv);
+
+    strcpy(resp, "Bye bye!! ^_^\n");
+    return;
 }
 
-void process_command(char *resp, int command) {
-  switch (command) {
-    case INITIALISE_CLIENT:
-      init_client(resp);
-      break;
-    case SYNC_MEM_SERVERS:
-      sync_mem_serv(resp);
-      break;
-    case CLOSE_CLIENT:
-      close_client(resp);
-      break;
-    default:
-     strcpy(resp, "Error: Unknown command");
-  }
+void process_command(char *resp, char *req) {
+    int cmd = atoi(req[0]);
+    char *ip = req+1;
+    switch (command) {
+        case INITIALISE_CLIENT:
+            init_client(resp);
+            break;
+        case SYNC_MEM_SERVERS:
+            sync_mem_serv(resp);
+            break;
+        case CLOSE_CLIENT:
+            close_client(resp, ip);
+            break;
+        default:
+            strcpy(resp, "Error: Unknown command");
+    }
 }
 
 int main(int argc, char *argv[])

@@ -112,3 +112,5 @@ int remove_mem_serv_node(mem_serv *head, const char *ip) {
   fprintf(stderr, "\nError: Memory server with ip %s not found", ip);
   return -1;
 }
+
+

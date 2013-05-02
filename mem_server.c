@@ -69,3 +69,18 @@ int get_is_assigned(mem_serv* curr) {
 int get_is_synced(mem_serv* curr) {
     return curr->is_synced;
 }
+
+void get_mem_serv_by_ip(const char *ip, mem_serv *node) {
+    mem_serv *curr, *prev;
+    curr = &mem_serv_list;
+
+    while (curr != NULL) {
+        prev = curr;
+        curr = curr->next;
+
+        if(strcasecmp(ip, curr->ip) == 0) {
+            node = curr;
+            return;
+        }
+    }
+}
