@@ -70,7 +70,7 @@ int get_is_synced(mem_serv* curr) {
     return curr->is_synced;
 }
 
-void get_mem_serv_by_ip(const char *ip, mem_serv *node) {
+void get_mem_serv_by_ip(mem_serv *node, const char *ip) {
     mem_serv *curr, *prev;
     curr = &mem_serv_list;
 

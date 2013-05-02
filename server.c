@@ -15,7 +15,7 @@
   
 int port = 5000;
 
-void process_command(char *, int);
+void process_command(char *, char *);
 
 void get_mem_serv_ip(char *ip) {
   // todo: use load balancer algo to get correct ip
@@ -51,11 +51,12 @@ void init_client(char *resp) {
     char ip[INET_ADDRSTRLEN + 1];
     get_mem_serv_ip(ip);
 
-    printf("\nClient count of memory server %s is %d", ip, get_client_count(get_mem_serv_by_ip(ip)));
+    //printf("\nClient count of memory server %s is %d", ip, get_client_count(get_mem_serv_by_ip(ip)));
     mem_serv curr_mem_serv;
     get_mem_serv_by_ip(&curr_mem_serv, ip);
     inc_client_count(&curr_mem_serv);
-    printf("\nClient count of memory server %s is %d", ip, get_client_count(get_mem_serv_by_ip(ip)));
+    //printf("\nClient count of memory server %s is %d", ip, get_client_count(get_mem_serv_by_ip(ip)));
+    printf("\nClient count of memory server %s is %d", ip, get_client_count(&curr_mem_serv));
 
     strcpy(resp, ip);
     return;
@@ -68,19 +69,20 @@ void sync_mem_serv(char *resp) {
 }
 
 void close_client(char *resp, char *ip) {
-    printf("\nCLosing client. Ip address of the attached server: %s and number of clients attached is %d ", ip, get_client_count(get_mem_serv_by_ip(ip)));
+    //printf("\nCLosing client. Ip address of the attached server: %s and number of clients attached is %d ", ip, get_client_count(get_mem_serv_by_ip(ip)));
     mem_serv curr_mem_serv;
     get_mem_serv_by_ip(&curr_mem_serv, ip);
     dec_client_count(&curr_mem_serv);
+    printf("\nCLosing client. Ip address of the attached server: %s and number of clients attached is %d ", ip, get_client_count(&curr_mem_serv));
 
     strcpy(resp, "Bye bye!! ^_^\n");
     return;
 }
 
 void process_command(char *resp, char *req) {
-    int cmd = atoi(req[0]);
+    int cmd = atoi(req);
     char *ip = req+1;
-    switch (command) {
+    switch (cmd) {
         case INITIALISE_CLIENT:
             init_client(resp);
             break;

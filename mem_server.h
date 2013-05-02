@@ -29,6 +29,7 @@ void set_is_synced(mem_serv*, int);
 int get_is_assigned(mem_serv*);
 int get_is_synced(mem_serv*);
 
-void get_mem_serv_by_ip(mem_serv *head, const char *ip, mem_serv *node);
+//void get_mem_serv_by_ip(mem_serv *head, const char *ip, mem_serv *node);
+void get_mem_serv_by_ip(mem_serv*, const char *ip);
 
 #endif
