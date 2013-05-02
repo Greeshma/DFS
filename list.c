@@ -7,11 +7,11 @@
 #define MAX_PATH 257
 #define MAX_LIST_LENGTH 100
 
-int init_mem_serv_list(mem_serv *mem_serv_head) {
-  mem_serv_head = (mem_serv*) malloc(sizeof(mem_serv));
+mem_serv* init_mem_serv_list(void) {
+  mem_serv* mem_serv_head = (mem_serv*) malloc(sizeof(mem_serv));
   if(mem_serv_head == NULL) {
     fprintf(stderr, "\nCould not initialise memory servers list");
-    return -1;
+    return NULL;
   }
 
   mem_serv_head->ip = NULL;
@@ -20,7 +20,7 @@ int init_mem_serv_list(mem_serv *mem_serv_head) {
 
   mem_serv_head->next = NULL;
   mem_serv_head->prev = NULL;
-  return 1;
+  return mem_serv_head;
 }
 
 void free_mem_serv_list(mem_serv *mem_serv_head) {

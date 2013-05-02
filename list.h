@@ -3,7 +3,7 @@
 
 #include "mem_server.h"
 
-int init_mem_serv_list(mem_serv *mem_serv_head);
+mem_serv* init_mem_serv_list(void);
 void free_mem_serv_list(mem_serv *mem_serv_head);
 
 int create_mem_serv_node(mem_serv *node, const char *ip);
