@@ -71,6 +71,16 @@ void init_client(char *resp) {
 
 void sync_mem_serv(char *resp) {
     printf("\nTrying to sync memory servers");
+
+    FILE *fp;
+    char FILEPATH[MAX_PATH];
+    strcpy(FILEPATH, "sync");
+    fp = fopen(FILEPATH, "a+");
+
+    find_all_not_synced_servers(fp);
+
+    fclose(fp);
+
     strcpy(resp, "Sync completed\n");
     return;
 }

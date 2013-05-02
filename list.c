@@ -31,31 +31,31 @@ int init_mem_serv_list(mem_serv* mem_serv_head) {
 
 /* free mem server list */
 void free_mem_serv_list(mem_serv *mem_serv_head) {
-  mem_serv *temp;
-  while(mem_serv_head != NULL) {
-    temp = mem_serv_head;
-    mem_serv_head = mem_serv_head->next;
-    free(temp);
-  }
-  return;
+    mem_serv *temp;
+    while(mem_serv_head != NULL) {
+        temp = mem_serv_head;
+        mem_serv_head = mem_serv_head->next;
+        free(temp);
+    }
+    return;
 }
 
 int create_mem_serv_node(mem_serv *node, const char *ip) {
-  node = malloc(sizeof(mem_serv));
-  if(node == NULL) {
-    fprintf(stderr, "\nError in creating a memory server node");
-    return -1;
-  }
+    node = malloc(sizeof(mem_serv));
+    if(node == NULL) {
+        fprintf(stderr, "\nError in creating a memory server node");
+        return -1;
+    }
 
-  strcpy(node->ip, ip);
-  set_is_assigned(node, 0);
-  set_is_synced(node, 0);
-  set_client_count(node, 0);
+    strcpy(node->ip, ip);
+    set_is_assigned(node, 0);
+    set_is_synced(node, 0);
+    set_client_count(node, 0);
 
-  node->prev = NULL;
-  node->next = NULL;
+    node->prev = NULL;
+    node->next = NULL;
 
-  return 1;
+    return 1;
 }
 
 /*
