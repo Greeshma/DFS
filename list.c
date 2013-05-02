@@ -92,7 +92,8 @@ int mem_serv_list_append(mem_serv *head, const char *ip) {
 
     new->next = NULL; // this is the last in the list
     new->prev = curr; // append to current list
-  
+    curr->next = new; 
+
     return 1;
 }
 

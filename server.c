@@ -19,7 +19,7 @@ void process_command(char *, char *);
 
 void get_mem_serv_ip(char *ip) {
   // todo: use load balancer algo to get correct ip
-  strcpy(ip, "localhost");
+  strcpy(ip, "127.0.0.1");
   printf("\nReturning the ip address of memory server %s", ip);
   return;
 }
@@ -49,11 +49,15 @@ void init_client(char *resp) {
     printf("\nInitialising client");
 
     char ip[INET_ADDRSTRLEN + 1];
+    fprintf(stderr, "obtaining mem server ip...\n");
     get_mem_serv_ip(ip);
-
+    fprintf(stderr, "obtainged mem server : %s\n", ip);
     //printf("\nClient count of memory server %s is %d", ip, get_client_count(get_mem_serv_by_ip(ip)));
     mem_serv curr_mem_serv;
+    fprintf(stderr, "requesting for mem-server with ip: %s\n", ip);
     get_mem_serv_by_ip(&curr_mem_serv, ip);
+    fprintf(stderr, "received a mem_server count :%d\n", curr_mem_serv.count);
+
     inc_client_count(&curr_mem_serv);
     //printf("\nClient count of memory server %s is %d", ip, get_client_count(get_mem_serv_by_ip(ip)));
     printf("\nClient count of memory server %s is %d", ip, get_client_count(&curr_mem_serv));
@@ -80,7 +84,8 @@ void close_client(char *resp, char *ip) {
 }
 
 void process_command(char *resp, char *req) {
-    int cmd = atoi(req);
+    char c = req[0];
+    int cmd = atoi(&c);
     char *ip = req+1;
     switch (cmd) {
         case INITIALISE_CLIENT:
@@ -94,6 +99,7 @@ void process_command(char *resp, char *req) {
             break;
         default:
             strcpy(resp, "Error: Unknown command");
+            fprintf(stderr, "Unknown command recieved: %d\n", cmd);
     }
 }
 

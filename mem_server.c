@@ -44,7 +44,7 @@ void set_client_count(mem_serv* curr, int n) {
 }
 
 void inc_client_count(mem_serv* curr) {
-    curr->count++;
+    curr->count+=1;
     return;
 }
 
@@ -73,14 +73,21 @@ int get_is_synced(mem_serv* curr) {
 void get_mem_serv_by_ip(mem_serv *node, const char *ip) {
     mem_serv *curr, *prev;
     curr = &mem_serv_list;
+    node = NULL;
 
+    fprintf(stderr, "searching for mem servers with ip %s\n", ip);
+    
     while (curr != NULL) {
-        prev = curr;
-        curr = curr->next;
 
+        fprintf(stderr, "comapring %s with %s \n", ip, curr->ip);
         if(strcasecmp(ip, curr->ip) == 0) {
             node = curr;
-            return;
+            fprintf(stderr, "found mem server with ip %s\n", curr->ip);
+            break;
         }
+        
+        prev = curr;
+        curr = curr->next;
     }
+    return;
 }
