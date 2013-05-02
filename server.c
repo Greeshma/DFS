@@ -51,7 +51,7 @@ void init_client(char *resp) {
     printf("\nInitialising client");
 
     char ip[INET_ADDRSTRLEN + 1];
-    fprintf(stderr, "obtaining mem server ip...\n");
+    fprintf(stderr, "\nObtaining mem server ip...\n");
     get_mem_serv_ip(ip);
 
     fprintf(stderr, "Obtained mem server : %s\n", ip);
@@ -69,15 +69,16 @@ void init_client(char *resp) {
     return;
 }
 
-void sync_mem_serv(char *resp) {
+void sync_mem_serv(char *resp, char *ip) {
     printf("\nTrying to sync memory servers");
 
     FILE *fp;
-    char FILEPATH[MAX_PATH];
-    strcpy(FILEPATH, "sync");
     fp = fopen(FILEPATH, "a+");
 
     find_all_not_synced_servers(fp);
+    char buf[MAX_STR];
+    sprintf(buf, "./synchronize.sh %s", ip);
+    system(buf);
 
     fclose(fp);
 
@@ -87,9 +88,9 @@ void sync_mem_serv(char *resp) {
 
 void close_client(char *resp, char *ip) {
     mem_serv *curr_mem_serv;
-    fprintf(stderr, "initiated connection closing for %s\n", ip);
+    fprintf(stderr, "Initiated connection closing for %s\n", ip);
     curr_mem_serv = get_mem_serv_by_ip(ip);
-    fprintf(stderr, "found mem servre allocated for %s with count %d\n", ip, curr_mem_serv->count);
+    fprintf(stderr, "Found mem server allocated for %s with count %d\n", ip, curr_mem_serv->count);
     dec_client_count(curr_mem_serv);
     printf("\nCLosing client. Ip address of the attached server: %s and number of clients attached is %d ", ip, get_client_count(curr_mem_serv));
 
@@ -107,7 +108,7 @@ void process_command(char *resp, char *req) {
             init_client(resp);
             break;
         case SYNC_MEM_SERVERS:
-            sync_mem_serv(resp);
+            sync_mem_serv(resp, ip);
             break;
         case CLOSE_CLIENT:
             close_client(resp, ip);
@@ -147,7 +148,7 @@ int main(int argc, char *argv[])
   {
     connfd = accept(listenfd, (struct sockaddr*)NULL, NULL); 
 
-    printf("\naccept\n");
+    printf("\nAccept\n");
     pthread_create(&thread, NULL, handle_client, (void *)&connfd);
     sleep(1);
    }

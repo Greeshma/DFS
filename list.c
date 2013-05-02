@@ -17,7 +17,6 @@ int init_mem_serv_list(mem_serv* mem_serv_head) {
     return -1;
   }
 
-  //mem_serv_head->ip = NULL;
   strcpy(mem_serv_head->ip, "");
   mem_serv_head->is_assigned  = -1;
   mem_serv_head->is_synced = -1;

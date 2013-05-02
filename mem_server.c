@@ -118,13 +118,15 @@ int get_best_mem_serv_ip(char *ip) {
     printf("\nSending ip %s ", ip);
 }
 
-void find_all_not_synced_servers(FILE *) {
+void find_all_not_synced_servers(FILE * fp) {
     mem_serv *curr;
     curr = &mem_serv_list;
     curr = curr->next;
 
-    while (curr != null) {
+    while (curr != NULL) {
         if(curr->is_synced == 0)
             fprintf(fp, "\n%s", curr->ip);
+
+        curr = curr->next;
     }
 }

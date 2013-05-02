@@ -5,3 +5,5 @@
 #define INITIALISE_CLIENT 0
 #define SYNC_MEM_SERVERS 1
 #define CLOSE_CLIENT 2
+
+#define FILEPATH "mem_servers.txt"
