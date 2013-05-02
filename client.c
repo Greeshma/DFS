@@ -15,6 +15,8 @@ char *server;
 int port = 5000;
 int sockfd = -1;
 
+char mem_server_ip[INET_ADDRSTRLEN + 1];
+
 char *mount_path;
 int is_synced;
 
@@ -54,7 +56,7 @@ int send_command(int cmd) {
     }
 
     memset(sendBuff, 0, MAX_SIZE);
-    sprintf(sendBuff, "%d%s\n", cmd, server);
+    sprintf(sendBuff, "%d%s\n", cmd, mem_server_ip);
     printf("\nSending command: %s", sendBuff);
     n = write(sockfd, sendBuff, strlen(sendBuff)); 
 
@@ -73,6 +75,7 @@ int parse_response(int cmd, char *resp) {
   switch(cmd) {
     case INITIALISE_CLIENT:
       is_synced = 0;
+      strcpy(mem_server_ip, "");
       strcpy(ip, resp);
       printf("\nEnter the path to mount the server partition: ");
       mount_path = (char *)malloc(sizeof(char) * MAX_PATH);
@@ -81,6 +84,7 @@ int parse_response(int cmd, char *resp) {
       printf("\nMounting the file system from %s on %s", ip, mount_path);
       sprintf(buf, "corefs/bin/dclient -S %s %s", ip, mount_path);
       system(buf);
+      strcpy(mem_server_ip, ip);
       break;
     case SYNC_MEM_SERVERS:
       printf("\n %s \n", resp);

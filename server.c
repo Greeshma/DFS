@@ -78,6 +78,7 @@ void sync_mem_serv(char *resp) {
 void close_client(char *resp, char *ip) {
     mem_serv *curr_mem_serv;
     curr_mem_serv = get_mem_serv_by_ip(ip);
+    printf("\nGot mem serv with ip %s\n", ip);
     dec_client_count(curr_mem_serv);
     printf("\nCLosing client. Ip address of the attached server: %s and number of clients attached is %d ", ip, get_client_count(curr_mem_serv));
 
