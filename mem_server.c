@@ -91,3 +91,29 @@ mem_serv* get_mem_serv_by_ip(const char *ip) {
     }
     return node;
 }
+
+int get_best_mem_serv_ip(char *ip) {
+    mem_serv *curr, *min;
+    curr = &mem_serv_list;
+
+    if(curr == NULL) {
+        fprintf(stderr, "\nList is not initialised");
+        return -1;
+    }
+
+    curr = curr->next;
+    min = curr;
+
+    while(curr != NULL) {
+        printf("\nInside while with ip %s and count %d\n", curr->ip, curr->count);
+        printf("\nInside while with min count = %d and ip = %s\n", min->count, min->ip);
+        if(curr->count < min->count) {
+            printf("\nInside if with min count = %d and ip = %s\n", min->count, min->ip);
+            min = curr;
+        }
+        
+        curr = curr->next;
+    }
+    ip = min->ip;
+    printf("\nSending ip %s ", ip);
+}

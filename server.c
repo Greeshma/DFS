@@ -20,10 +20,10 @@ int sync_in_process = 0;
 void process_command(char *, char *);
 
 void get_mem_serv_ip(char *ip) {
-  // todo: use load balancer algo to get correct ip
-  strcpy(ip, "127.0.0.1");
-  printf("\nReturning the ip address of memory server %s", ip);
-  return;
+    // todo: use load balancer algo to get correct ip
+    get_best_mem_serv_ip(ip);
+    printf("\nReturning the ip address of memory server %s", ip);
+    return;
 }
 
 void *handle_client(void *arg) 
