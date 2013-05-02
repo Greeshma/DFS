@@ -21,12 +21,10 @@ char *mount_path;
 int is_synced;
 
 int send_command(int cmd) {
-    printf("\nline 21 send_command %d", cmd);
     int n = 0;
     char recvBuff[MAX_SIZE];
     char sendBuff[MAX_SIZE];
     struct sockaddr_in serv_addr; 
-    printf("\nline 26 send_command %d", cmd);
 
     if(sockfd < 0) {
         if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -35,8 +33,6 @@ int send_command(int cmd) {
             return 1;
         } 
                 
-        printf("\n send_command %d", cmd);
-
         memset(&serv_addr, '0', sizeof(serv_addr)); 
 
         serv_addr.sin_family = AF_INET;
