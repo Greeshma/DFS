@@ -11,6 +11,7 @@ int main(int argc, char **argv) {
 
   printf("\ntest.c 11");
   parse_response(INITIALISE_CLIENT, resp);
+  printf("\nEnter a number to continue: ");
   scanf("%d", &i);
   parse_response(CLOSE_CLIENT, resp);
 

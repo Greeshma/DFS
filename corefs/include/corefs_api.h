@@ -1,0 +1,180 @@
+#ifndef _COREFS_TYPES_H
+#define _COREFS_TYPES_H
+
+#include <fuse.h>
+#include "protocol.h"
+
+
+#define PROCEED 0xABCD
+#define STOP -1
+#define MAX_OPTS 100  /* Maximum length of the argstr string passed to
+                       * up_parse_arguments */
+
+
+
+typedef struct _sock_ctx SOCK_CTX;
+struct _sock_ctx {
+  /* This structure stores the pointer to the send and receive functions
+   * that will be called by coreFS to send and receive network
+   * messages. The upper layer, should set these appropriately. The
+   * sock_ctx contains socket. */
+	int sock;
+};
+
+
+typedef struct _commctx COMMCTX;
+struct _commctx {
+  SOCK_CTX* sock_ctx; /*  context that contains socket */
+  void* sec_ctx; /* upper layer can store its context here */
+  /*  Function pointers to network functions layer */
+  int (*receive)(COMMCTX*, char*, int); 
+  int (*send)(COMMCTX*, char*, int);
+};
+
+
+
+/* The current CoreFS client operations */
+typedef struct _corefs_client_ops corefs_client_operations;
+struct _corefs_client_ops{
+    /* FUSE file system functions */
+    int (*open) (const char *, struct fuse_file_info *);
+    int (*release) (const char *, struct fuse_file_info *);
+    int (*read) (const char *, char *, size_t, off_t, struct fuse_file_info *);
+    int (*readdir) (const char *, void *, fuse_fill_dir_t, off_t, struct fuse_file_info *);
+    int (*getattr) (const char *, struct stat *);
+    int (*write) (const char *, const char *, size_t, off_t, struct fuse_file_info *);
+    int (*mknod) (const char *, mode_t, dev_t);
+    int (*truncate) (const char *, off_t);
+    int (*unlink) (const char *);
+    int (*mkdir) (const char *, mode_t);
+    int (*rmdir) (const char *);
+    int (*rename) (const char *, const char *);
+    int (*link) (const char *, const char *);
+    int (*symlink) (const char *, const char *);
+    int (*readlink) (const char *, char *, size_t);
+    int (*chmod) (const char *, mode_t);
+    int (*chown) (const char *, uid_t, gid_t);	
+    int (*utime) (const char *, struct utimbuf *);
+    int (*flush) (const char *, struct fuse_file_info *);
+    int (*access) (const char *, int);
+    void (*destroy) (void *);
+#ifdef HAVE_SETXATTR
+    int (*setxattr) (const char *, const char *, const char *, size_t , int );
+    int (*getxattr) (const char *, const char *, char *, size_t);
+    int (*listxattr) (const char *, char *, size_t);
+    int (*removexattr) (const char *, const char *);
+#endif
+  
+    /* Sometimes the upper layer wants to setup its own command line
+       arguments. For example, in case of an encrypting file system the
+       upper layer may want to user to specify paths to keys used for
+       encryption. In this case the parsing of command line option can be
+       done in the up_parse_arguments structure. Corefs will pass all
+       command line arguments to the upper layer. If the upper layer
+       returns PROCEED, corefs will proceed to perform its own
+       parsing. Otherwise, it will print "its usage" and exit. */
+    int (*up_parse_arguments)(char * argstr, int argc, char** argv);
+  
+    /* The up_new_* functions are called every time a connection is
+       established with the other party. The corefs client will call
+       up_new_server after establishing connection with a new server,
+       whereas the corefs server will call up_new_client. The COMMCTX *
+       argument is a pointer to the context that contains the pointers to
+       send, receive, and goodbye functions. These three functions will be
+       called when the client/server wants to send some info, receive some
+       info, or end connection for that particular socket passed in the ctx
+       structure. Sometimes the upper layer may need to trap all outgoing
+       and incoming messages. For example, in case of link encryption every
+       outgoing message has to be encrypted. By initializing the send and
+       receive functions to point to its own send and receive functions the
+       upper layer will be able to trap all the messages. The upper layer
+       can then do whatever it wants, e.g., just encrypt the message and
+       send it over the socket. */
+    int (*up_new_server)(char * client, char * server, COMMCTX * ctx);
+
+  
+    /* This function is called for each request by the client. The
+     * function should set the appropriate uid, gid etc fields. These
+     * are transferred to the server and the server can use them to
+     * perform access control. In most of the cases the paths may not
+     * seem useful. But one can embed access control information in the
+     * paths and associate uid, gid to that information. For example,
+     * has of the user's public key can be a part of the path. new_path
+     * is meaningful only in case of calls such as symlink, link etc that
+     * operate on two paths at the same time.*/
+    void (*up_get_user_info)(user_info * u, const char * path, const char * new_path);
+    
+    /* This function is called when a socket is closed (either on
+       purpose or due to some error). */
+    void (*up_eof_connection)(COMMCTX * ctx); // TODO: where should I call this from?
+};
+
+
+
+/* The current CoreFS server API */
+typedef struct _corefs_server_ops corefs_server_operations;
+struct _corefs_server_ops{
+  
+  /* All of the following functions should return 0 on success and -1
+   * on error. The ctx specifies the socket and send and receive
+   * functions to be used for this socket. The cmd is the actual
+   * command sent by the coreFS client. */
+  int (*handle_read)(COMMCTX* ctx, corefs_packet* cmd);
+  int (*handle_write)(COMMCTX* ctx, corefs_packet* cmd);
+  int (*handle_setxattr)(COMMCTX* ctx, corefs_packet* cmd);
+  int (*handle_getxattr)(COMMCTX* ctx, corefs_packet* cmd);
+  int (*handle_listxattr)(COMMCTX* ctx, corefs_packet* cmd);
+  int (*handle_removexattr)(COMMCTX* ctx, corefs_packet* cmd);
+  int (*handle_readdir)(COMMCTX* ctx, corefs_packet* cmd);
+  int (*handle_getattr)(COMMCTX* ctx, corefs_packet* cmd);
+  int (*handle_readlink)(COMMCTX* ctx, corefs_packet* cmd);
+
+  int (*open) (const char *, int flags);
+  int (*release) (const char *, int flags);
+  int (*mknod) (const char *, mode_t, dev_t);
+  int (*truncate) (const char *, off_t);
+  int (*unlink) (const char *);
+  int (*mkdir) (const char *, mode_t);
+  int (*rmdir) (const char *);
+  int (*rename) (const char *, const char *);
+  int (*link) (const char *, const char *);
+  int (*symlink) (const char *, const char *);
+  int (*chmod) (const char *, mode_t);
+  int (*chown) (const char *, uid_t, gid_t);	
+  int (*utime) (const char *, const struct utimbuf *);
+  int (*access) (const char *, int);
+  
+  int (*up_parse_arguments)(char * argstr, int argc, char** argv);
+  
+  int (*up_new_client)(char * client, char * server, COMMCTX * ctx);
+  
+  void (*up_eof_connection)(COMMCTX * ctx); // TODO: where should I call this from?
+  int (*up_check_access)(COMMCTX * ctx, const user_info * u, int * status, const char * path1, const char * path2, int op);
+};
+
+int up_server_init(corefs_server_operations * op);
+int up_client_init(corefs_client_operations * op);
+
+
+/* Helper corefs functions that can be called by the upper layer. */
+int cb_log(COMMCTX*, char*);
+int phy_send(COMMCTX*, char* buf, int size);
+int phy_receive(COMMCTX*, char* buf, int size); /* physical layer
+                                                 * network send
+                                                 * functions. These
+                                                 * simply receive or
+                                                 * send size amount of
+                                                 * information to or
+                                                 * from the buffer */
+
+
+#ifndef EKEYREVOKED
+#define EKEYREVOKED 128
+#endif
+#ifndef EKEYREJECTED
+#define EKEYREJECTED 129
+#endif
+
+
+
+#endif

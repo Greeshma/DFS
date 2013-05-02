@@ -12,11 +12,14 @@
 
 #include "common.h"
 #include "mem_server.h"
+  
+int port = 5000;
 
 void process_command(char *, int);
 
 void get_mem_serv_ip(char *ip) {
   // todo: use load balancer algo to get correct ip
+  strcpy(ip, "localhost");
   return;
 }
 
@@ -78,7 +81,6 @@ int main(int argc, char *argv[])
 {
   int listenfd = 0, connfd = 0;
   struct sockaddr_in serv_addr; 
-  int port = 5000;
 
   pthread_t thread;
 

@@ -13,50 +13,58 @@
 
 char *server;
 int port = 5000;
+int sockfd = -1;
 
 char *mount_path;
 int is_synced;
 
 int send_command(int cmd) {
-    printf("\n send_command %d", cmd);
-    int sockfd = 0, n = 0;
-    char recvBuff[1024];
-    char sendBuff[1024];
+    printf("\nline 21 send_command %d", cmd);
+    int n = 0;
+    char recvBuff[MAX_SIZE];
+    char sendBuff[MAX_SIZE];
     struct sockaddr_in serv_addr; 
-    printf("\n send_command %d", cmd);
+    printf("\nline 26 send_command %d", cmd);
 
-    if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-    {
-        printf("\n Error : Could not create socket \n");
-        return 1;
-    } 
-            
-    printf("\n send_command %d", cmd);
+    if(sockfd < 0) {
+        if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+        {
+            printf("\n Error : Could not create socket \n");
+            return 1;
+        } 
+                
+        printf("\n send_command %d", cmd);
 
-    memset(&serv_addr, '0', sizeof(serv_addr)); 
+        memset(&serv_addr, '0', sizeof(serv_addr)); 
 
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(port); 
+        serv_addr.sin_family = AF_INET;
+        serv_addr.sin_port = htons(port); 
 
-    if(inet_pton(AF_INET, server, &serv_addr.sin_addr)<=0)
-    {
-        printf("\n inet_pton error occured\n");
-        return 1;
-    } 
+        if(inet_pton(AF_INET, server, &serv_addr.sin_addr)<=0)
+        {
+            printf("\n inet_pton error occured\n");
+            return 1;
+        } 
 
-    if( connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
-    {
-       printf("\n Error : Connect Failed \n");
-       return 1;
-    } 
+        if( connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+        {
+           printf("\n Error : Connect Failed \n");
+           return 1;
+        } 
+    }
 
     memset(sendBuff, 0, MAX_SIZE);
     sprintf(sendBuff, "%d\n", cmd);
+    printf("\nSending command: %s", sendBuff);
     n = write(sockfd, sendBuff, strlen(sendBuff)); 
 
     memset(recvBuff, 0, MAX_SIZE);
     n = read(sockfd, recvBuff, sizeof(recvBuff)-1);
+    printf("\nReceived response: %s", recvBuff);
+    parse_response(cmd, recvBuff);
 
+    close(sockfd);
+    sockfd = -1;
     return 0;
 }
 
@@ -101,8 +109,9 @@ int parse_response(int cmd, char *resp) {
   }
 }
 
-/*
 int main(int argc, char **argv) {
+    char ch;
+
   if(argc != 2)
   {
       printf("\n Usage: %s <ip of server> \n",argv[0]);
@@ -115,9 +124,14 @@ int main(int argc, char **argv) {
   server = argv[1];
 
   send_command(INITIALISE_CLIENT);
+  printf("\nClient init done. Enter any key to continue: ");
+  scanf(" %c", &ch);
   send_command(SYNC_MEM_SERVERS);
+  printf("\nSync memeory servers done. Enter any key to continue: ");
+  scanf(" %c", &ch);
   send_command(CLOSE_CLIENT);
+  printf("\nClient close done. Enter any key to continue: ");
+  scanf(" %c", &ch);
 
   return 0;
 }
-*/
