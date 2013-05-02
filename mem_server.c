@@ -5,14 +5,15 @@
 #include "mem_server.h"
 #include "list.h"
 
-mem_serv *mem_serv_list;
+mem_serv* mem_serv_list;
 
 int init_mem_serv() {
   config_t cfg;
   config_setting_t *servers, *ip;
 
   config_init(&cfg);
-  if(init_mem_serv_list(mem_serv_list) < 0 || mem_serv_list == NULL) {
+  mem_serv_list = init_mem_serv_list();
+  if(mem_serv_list == NULL){
     fprintf(stderr, "\nError: Initialising memory servers list");
     return -1;
   }
