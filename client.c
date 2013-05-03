@@ -29,7 +29,7 @@ int send_command(int cmd) {
     if(sockfd < 0) {
         if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
         {
-            printf("\n Error : Could not create socket \n");
+            fprintf(stderr, "\nError : Could not create socket \n");
             return 1;
         } 
                 
@@ -40,13 +40,13 @@ int send_command(int cmd) {
 
         if(inet_pton(AF_INET, server, &serv_addr.sin_addr)<=0)
         {
-            printf("\n inet_pton error occured\n");
+            fprintf(stderr, "\nError: inet_pton error occured\n");
             return 1;
         } 
 
         if( connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
         {
-           printf("\n Error : Connect Failed \n");
+           fprintf(stderr, "\nError : Connect Failed \n");
            return 1;
         } 
     }
@@ -73,7 +73,7 @@ int parse_response(int cmd, char *resp) {
       is_synced = 0;
       strcpy(mem_server_ip, "");
       strcpy(ip, resp);
-      printf("\nEnter the path to mount the server partition: ");
+      printf("\n\nEnter the path to mount the server partition: ");
       mount_path = (char *)malloc(sizeof(char) * MAX_PATH);
       buf = (char *)malloc(sizeof(char) * MAX_PATH);
       scanf("%s", mount_path);

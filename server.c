@@ -21,6 +21,7 @@ void process_command(char *, char *);
 
 void get_mem_serv_ip(char *ip) {
     // todo: use load balancer algo to get correct ip
+    printf("\nUsing the load balancer to get ip of the memory server");
     get_best_mem_serv_ip(ip);
     printf("\nReturning the ip address of memory server %s", ip);
     return;
@@ -34,6 +35,8 @@ void *handle_client(void *arg)
   int n = 0;
   int connfd;
   connfd = *((int *) arg);
+
+  printf("\nClient accepted. Now to handle the client request and respond. ");
 
   bzero(recvBuff, MAX_SIZE);
   n = read(connfd, recvBuff, sizeof(recvBuff)-1);
@@ -51,16 +54,16 @@ void init_client(char *resp) {
     printf("\nInitialising client");
 
     char ip[INET_ADDRSTRLEN + 1];
-    fprintf(stderr, "\nObtaining mem server ip...\n");
+    fprintf(stdout, "\nObtaining mem server ip...\n");
     get_mem_serv_ip(ip);
 
-    fprintf(stderr, "Obtained mem server : %s\n", ip);
+    fprintf(stdout, "Obtained mem server : %s\n", ip);
 
     mem_serv *curr_mem_serv;
-    fprintf(stderr, "requesting for mem-server with ip: %s\n", ip);
+    fprintf(stdout, "Requesting for mem-server with ip: %s\n", ip);
     curr_mem_serv = get_mem_serv_by_ip(ip);
     
-    fprintf(stderr, "received a mem_server count :%d\n", curr_mem_serv->count);
+    fprintf(stdout, "Received a mem_server count :%d\n", curr_mem_serv->count);
 
     inc_client_count(curr_mem_serv);
     printf("\nClient count of memory server %s is %d", ip, get_client_count(curr_mem_serv));
@@ -75,8 +78,11 @@ void sync_mem_serv(char *resp, char *ip) {
     FILE *fp;
     fp = fopen(FILEPATH, "a+");
 
+    printf("\nFinding all non-synced servers");
     find_all_not_synced_servers(fp);
+
     char buf[MAX_STR];
+    printf("\nUsing Unison to sync the servers");
     sprintf(buf, "./synchronize.sh %s", ip);
     system(buf);
 
@@ -88,13 +94,14 @@ void sync_mem_serv(char *resp, char *ip) {
 
 void close_client(char *resp, char *ip) {
     mem_serv *curr_mem_serv;
-    fprintf(stderr, "Initiated connection closing for %s\n", ip);
+    fprintf(stdout, "Initiated connection closing for %s\n", ip);
     curr_mem_serv = get_mem_serv_by_ip(ip);
-    fprintf(stderr, "Found mem server allocated for %s with count %d\n", ip, curr_mem_serv->count);
+    fprintf(stdout, "Found mem server allocated for %s with count %d\n", ip, curr_mem_serv->count);
     dec_client_count(curr_mem_serv);
     printf("\nCLosing client. Ip address of the attached server: %s and number of clients attached is %d ", ip, get_client_count(curr_mem_serv));
 
-    strcpy(resp, "Bye bye!! ^_^\n");
+    strcpy(resp, "\nBye bye!! ^_^\n");
+    printf("\n____________________________________________________________________________\n");
     return;
 }
 
@@ -133,6 +140,7 @@ int main(int argc, char *argv[])
     return 0;
   }
 
+  printf("\nCreating a socket for listening to clients on port %d ", port);
   listenfd = socket(AF_INET, SOCK_STREAM, 0);
   memset(&serv_addr, '0', sizeof(serv_addr));
 
@@ -143,12 +151,13 @@ int main(int argc, char *argv[])
   bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)); 
 
   listen(listenfd, 10); 
+  printf("\nListening on port %d", port);
 
   while(1)
   {
     connfd = accept(listenfd, (struct sockaddr*)NULL, NULL); 
 
-    printf("\nAccept\n");
+    printf("\nAccepted client. Spawning a new thread for the client... \n");
     pthread_create(&thread, NULL, handle_client, (void *)&connfd);
     sleep(1);
    }
