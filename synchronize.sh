@@ -10,3 +10,4 @@ cat mem_servers.txt | while read serv;do
     echo "echo synchronizing $src with $dest"
     unison "$src" "$dest" -batch -auto -ui text
 done;
+rm mem_servers.txt

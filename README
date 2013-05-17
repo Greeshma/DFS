@@ -1,2 +1,40 @@
 DFS
 ===
+The DFS project is a simple Distributed File System which uses the FUSE API to provide the file system operations. 
+
+Main Components of the DFS:
+    |
+    --> Main Server 
+        |
+        --> 
+    |
+    --> Multiple Memory servers
+    |
+    --> Client which mounts the files from memory server to access the files
+
+How to install and run:
+=======================
+Run the following commands from the terminal to create the exec
+
+git clone https://github.com/Greeshma/DFS.git
+cd DFS
+make
+
+This creates the 'server' and 'client' files which can be run
+
+Memory Servers: 
+    Run the following on all the memory servers that are part of the distributed system
+    mkdir /dfs
+    sudo chown -R user:user /dfs
+    corefs/bin/dserver
+
+Main Server:
+    Run the following from the main server system
+    Add the IP address of all the memory servers in mem_serv.cfg file, and then start the server
+    ./server
+
+Client:
+    Now all the data in /dfs folder of the memory servers can be accessed from the client.
+    ./client <ip_address_of_main_server>
+    This will ask you a folder where you want to mount the files from the server, so provide a path. Usually /mnt can be used 
+    Once this is done, open your files in your /mnt folder, make changes to it and see it being updated in the server also and all others clients connected also can view the changes. Now share your files across others over the network and enjoy. Also you can access it from anywhere once you know the ip address of the main server, hence no need to carry your system or laptop around everywhere :)
